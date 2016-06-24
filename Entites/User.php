@@ -108,6 +108,12 @@ class User
         return "User " . $this->getId();
     }
 
+    /**
+     * Finds user by ID in DB. Returns User object if user found or false if not.
+     *
+     * @param $id
+     * @return bool|User
+     */
     public static function find($id) {
         $conn = DB::getConnection();
 
@@ -116,6 +122,10 @@ class User
         $stmt->execute();
 
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(count($res) === 0) {
+            return false;
+        }
 
         $user = new User();
 
@@ -127,6 +137,43 @@ class User
         return $user;
     }
 
+    /**
+     * Finds user by username in DB. Returns User object if user found or false if not.
+     *
+     * @param $username
+     * @return bool|User
+     */
+    public static function findByUsername($username) {
+        $conn = DB::getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username=:username");
+        $stmt->bindParam(":username", $username);
+        $stmt->execute();
+
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(count($res) === 0) {
+            return false;
+        }
+
+        $user = new User();
+
+        $user->setUsername($res["username"]);
+        $user->id = $res["id"];
+        $user->setAvatar($res["avatar"]);
+        $user->setPassword($res["password"]);
+
+        return $user;
+    }
+
+    /**
+     * Creates a user in DB. Returns User object.
+     *
+     * @param $username
+     * @param $password
+     * @param $avatar
+     * @return User
+     */
     public static function create($username, $password, $avatar) {
         $conn = DB::getConnection();
         $stmt = $conn->prepare("INSERT INTO users (username, password, avatar) VALUES (:username, :password, :avatar) RETURNING id");
@@ -147,5 +194,20 @@ class User
         return $user;
     }
 
-    
+    /**
+     * Updates existing user in DB.
+     * 
+     * @param User $user
+     * @return bool
+     */
+    public static function update(User $user) {
+        $conn = DB::getConnection();
+        $stmt = $conn->prepare("UPDATE users SET username=:username, password=:password, avatar=:avatar WHERE id=:id");
+        return $stmt->execute([
+            ":username" => $user->getUsername(),
+            ":password" => $user->getPassword(),
+            ":avatar" => $user->getAvatar(),
+            ":id" => $user->getId()
+        ]);
+    }
 }

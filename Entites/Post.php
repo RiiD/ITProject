@@ -43,6 +43,26 @@ class Post
     private $createDate;
 
     /**
+     * @var bool
+     */
+    private $isPrivate;
+
+    /**
+     * @return bool
+     */
+    public function isPrivate() {
+        return $this->isPrivate;
+    }
+
+    public function setPrivate() {
+        $this->isPrivate = true;
+    }
+
+    public function setPublic() {
+        $this->isPrivate = false;
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -152,5 +172,90 @@ class Post
     public function setLikes($likes)
     {
         $this->likes = $likes;
+    }
+    public static function find($id){
+        $conn = DB::getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM posts WHERE id=:id");
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(count($res)=== 0){
+            return false;
+        }
+
+        $post = new Post();
+
+        $post->setTitle($res["title"]);
+        $post->setBody($res["body"]);
+        $post->isPrivate = $res["isPrivate"];
+        $post->id = $res["id"];
+        $post->setLikes($res["likes"]);
+        $post->setPhoto($res["photo"]);
+        $post->setUser($res["user"]);
+        return $post;
+    }
+
+    public static function findByUser($userId){
+        $conn = DB::getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM posts WHERE \"user\"=:id");
+        $stmt->bindParam(":id", $userId);
+        $stmt->execute();
+
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function($row) {
+            $post = new Post();
+            $post->setTitle($row["title"]);
+            $post->setBody($row["body"]);
+            $post->id = $row["id"];
+            $post->isPrivate = $row["isPrivate"];
+            $post->setLikes($row["likes"]);
+            $post->setPhoto($row["photo"]);
+            $post->setUser($row["user"]);
+            return $post;
+        }, $res);
+    }
+
+    public static function create($title, $body, $photo, $user, $isPrivate) {
+        $conn = DB::getConnection();
+        $stmt = $conn->prepare("INSERT INTO posts (title, body, photo, \"user\") VALUES (:title, :body, :photo, :user) RETURNING id");
+        $stmt->execute([
+            ":title" => $title,
+            ":body" => $body,
+            ":user" => $user,
+            ":photo" => $photo,
+            ":isPrivate" => $isPrivate
+        ]);
+        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        $id = $res["id"];
+
+        $post = new Post();
+        $post->setTitle($title);
+        $post->setBody($body);
+        $post->setLikes(0);
+        $post->setPhoto($photo);
+        $post->setUser($user);
+        $post->isPrivate = $isPrivate;
+        $post->id = $id;
+        return $post;
+    }
+
+    public static function update(Post $post){
+        $conn = DB::getConnection();
+        $stmt = $conn->prepare("UPDATE posts SET title=:title
+            , body=:body, likes=:likes, photo=:photo, \"user\"=:user, isPrivate=:isPrivate WHERE id=:id");
+        return $stmt->execute([
+            ":title" => $post->getTitle(),
+             ":body"  => $post->getBody(),
+            ":likes" => $post->getLikes(),
+            ":photo" => $post->getPhoto(),
+            ":user"  => $post->getUser(),
+            ":id"    => $post->getId(),
+            ":isPrivate" => $post->isPrivate()
+        ]);
     }
 }
