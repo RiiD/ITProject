@@ -1,5 +1,7 @@
 <?php
 
+include_once dirname(__FILE__) . "/../DB.php";
+
 class Post
 {
     /**
@@ -167,12 +169,58 @@ class Post
     }
 
     /**
+     * @return string
+     */
+    public function serialize() {
+        $arr = [
+            "id" => $this->getId(),
+            "user" => $this->getUser(),
+            "body" => $this->getBody(),
+            "createDate" => $this->getCreateDate(),
+            "likes" => $this->getLikes(),
+            "photo" => $this->getPhoto(),
+            "title" => $this->getTitle(),
+            "isPrivate" => $this->isPrivate()
+        ];
+
+        return json_encode($arr);
+    }
+
+    /**
+     * @param $json
+     * @return Post
+     */
+    public static function deserialize($json) {
+        $arr = json_decode($json);
+
+        return static::fromArray($arr);
+    }
+
+    public static function fromArray($arr) {
+        $post = new Post();
+        $post->id = $arr["id"];
+        $post->setTitle($arr["title"]);
+        $post->setBody($arr["body"]);
+        $post->isPrivate = $arr["isPrivate"];
+        $post->setLikes($arr["likes"]);
+        $post->setPhoto($arr["photo"]);
+        $post->setUser($arr["user"]);
+
+        return $post;
+    }
+
+    /**
      * @param int $likes
      */
     public function setLikes($likes)
     {
         $this->likes = $likes;
     }
+
+    /**
+     * @param $id
+     * @return bool|Post
+     */
     public static function find($id){
         $conn = DB::getConnection();
 
@@ -180,12 +228,12 @@ class Post
         $stmt->bindParam(":id", $id);
         $stmt->execute();
 
-        $res = $stmt->fetch(PDO::FETCH_ASSOC);
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         if(count($res)=== 0){
             return false;
         }
-
+        $res = $res[0];
         $post = new Post();
 
         $post->setTitle($res["title"]);
@@ -198,6 +246,10 @@ class Post
         return $post;
     }
 
+    /**
+     * @param $userId
+     * @return array
+     */
     public static function findByUser($userId){
         $conn = DB::getConnection();
 
@@ -220,6 +272,14 @@ class Post
         }, $res);
     }
 
+    /**
+     * @param $title
+     * @param $body
+     * @param $photo
+     * @param $user
+     * @param $isPrivate
+     * @return Post
+     */
     public static function create($title, $body, $photo, $user, $isPrivate) {
         $conn = DB::getConnection();
         $stmt = $conn->prepare("INSERT INTO posts (title, body, photo, \"user\") VALUES (:title, :body, :photo, :user) RETURNING id");
@@ -244,6 +304,10 @@ class Post
         return $post;
     }
 
+    /**
+     * @param Post $post
+     * @return bool
+     */
     public static function update(Post $post){
         $conn = DB::getConnection();
         $stmt = $conn->prepare("UPDATE posts SET title=:title
@@ -257,5 +321,16 @@ class Post
             ":id"    => $post->getId(),
             ":isPrivate" => $post->isPrivate()
         ]);
+    }
+
+    /**
+     * @param Post $post
+     * @return bool
+     */
+    public static function delete(Post $post) {
+        $conn = DB::getConnection();
+
+        $stmt = $conn->prepare("DELETE FROM posts WHERE id=:id");
+        return $stmt->execute([":id" => $post->getId()]);
     }
 }

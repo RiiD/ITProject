@@ -1,6 +1,8 @@
 <?php
 
-include_once "../DB.php";
+include_once dirname(__FILE__) . "/../DB.php";
+include_once dirname(__FILE__) . "/Friends.php";
+include_once dirname(__FILE__) . "/Post.php";
 
 class User
 {
@@ -127,14 +129,7 @@ class User
             return false;
         }
 
-        $user = new User();
-
-        $user->setUsername($res["username"]);
-        $user->id = $res["id"];
-        $user->setAvatar($res["avatar"]);
-        $user->setPassword($res["password"]);
-
-        return $user;
+        return  static::fromArray($res);
     }
 
     /**
@@ -156,14 +151,7 @@ class User
             return false;
         }
 
-        $user = new User();
-
-        $user->setUsername($res["username"]);
-        $user->id = $res["id"];
-        $user->setAvatar($res["avatar"]);
-        $user->setPassword($res["password"]);
-
-        return $user;
+        return  static::fromArray($res);
     }
 
     /**
@@ -179,35 +167,71 @@ class User
         $stmt = $conn->prepare("INSERT INTO users (username, password, avatar) VALUES (:username, :password, :avatar) RETURNING id");
         $stmt->execute([
             ":username" => $username,
-            ":password" => $password,
+            ":password" => md5($password),
             ":avatar" => $avatar
         ]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         $id = $res["id"];
 
+        return static::fromArray([
+            "username" => $username,
+            "password" => $password,
+            "avatar" => $avatar,
+            "id" => $id
+        ]);
+    }
+
+    public static function fromArray($arr) {
         $user = new User();
-        $user->setPassword($password);
-        $user->setAvatar($avatar);
-        $user->setUsername($username);
-        $user->id = $id;
+
+        $user->setPassword($arr["password"]);
+        $user->setAvatar($arr["avatar"]);
+        $user->setUsername($arr["username"]);
+        $user->id = $arr["id"];
 
         return $user;
     }
 
-    /**
-     * Updates existing user in DB.
-     * 
-     * @param User $user
-     * @return bool
-     */
-    public static function update(User $user) {
+    public function getFriendsPosts() {
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("UPDATE users SET username=:username, password=:password, avatar=:avatar WHERE id=:id");
-        return $stmt->execute([
-            ":username" => $user->getUsername(),
-            ":password" => $user->getPassword(),
-            ":avatar" => $user->getAvatar(),
-            ":id" => $user->getId()
-        ]);
+        $stmt = $conn->prepare("SELECT posts.* FROM friends JOIN posts ON friends.friend2=posts.\"user\" 
+                                  WHERE friends.friend1=:id OR posts.\"user\"=:id ORDER BY posts.\"createDate\" LIMIT 8");
+        $stmt->execute([":id" => $this->getId()]);
+
+        $res = $stmt->fetchAll();
+
+        return array_map(function($row) {
+            return Post::fromArray($row);
+        }, $res);
+    }
+
+    public function findFriends($search){
+        $conn = DB::getConnection();
+        if($search == '*'){
+            //all of the people who are not friends
+            $stmt = $conn->prepare("SELECT * FROM users WHERE id NOT IN (SELECT users.id FROM users JOIN friends ON users.id=friends.friend2 WHERE friends.friend1=:id) AND id!=:id");
+            $stmt->execute([":id" => $this->getId()]);
+        }
+        else{
+            $stmt = $conn->prepare("SELECT * FROM users WHERE id NOT IN (SELECT users.id FROM users JOIN friends ON users.id=friends.friend2 WHERE friends.friend1=:id) AND id!=:id AND users.username LIKE :search");
+            $stmt->execute([
+                ":id" => $this->getId(),
+                ":search" => sprintf("%%%s%%", $search)
+            ]);
+        }
+
+        $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function($row) {
+            return User::fromArray($row);
+        }, $res);
+    }
+
+    public function serialize() {
+        return [
+            "id" => $this->getId(),
+            "username" => $this->getUsername(),
+            "avatar" => $this->getAvatar()
+        ];
     }
 }
