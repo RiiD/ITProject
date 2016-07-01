@@ -1,5 +1,6 @@
 <?php
 include_once "../../auth.php";
+include_once "../../utils.php";
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -21,6 +22,7 @@ function post() {
         echo "Login failed";
     } else {
         echo "Welcome";
+        redirect("/");
     }
 }
 

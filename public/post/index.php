@@ -28,14 +28,12 @@ switch ($method) {
 function post() {
     $user = getLoggedInUser();
 
-    var_dump($user);
-
     if(!$user) {
         http_response_code(403);
         return;
     }
 
-    $body = json_decode(stream_get_contents(STDIN));
+    $body = json_decode(file_get_contents("php://input"));
     $post = Post::create($body["title"], $body["body"], $body["photo"], $user->getId(), $body["isPrivate"]);
     
     return $post->serialize();
@@ -49,10 +47,16 @@ function put() {
         return;
     }
 
-    $post = Post::deserialize(stream_get_contents(STDIN));
-    Post::update($post);
+    $post = Post::deserialize(file_get_contents("php://input"));
+    $res = Post::update($post);
 
-    return $post->serialize();
+    if($res) {
+        http_response_code (200);
+    } else {
+        http_response_code (500);
+    }
+
+    echo $post->serialize();
 }
 
 function delete() {

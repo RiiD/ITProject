@@ -8,8 +8,13 @@ const Layout = React.createClass({
     getInitialState: function() {
         return {
             isLoading: true,
-            user: {}
+            user: {},
+            searchFriendQuery: ""
         };
+    },
+
+    setSearchFriendQuery: function(query) {
+        this.setState({ searchFriendQuery: query });
     },
 
     loadUser: function() {
@@ -27,12 +32,15 @@ const Layout = React.createClass({
 
     render: function() {
         const { children } = this.props;
-        const { user, isLoading } = this.state;
+        const { user, isLoading, searchFriendQuery } = this.state;
+
+        const childrenWithProps = React.Children.map(children, child => React.cloneElement(child, { user, searchFriendQuery }));
+
         return isLoading ? <div>Loading</div> : (
             <div className="container">
-                <Header user={user} />
+                <Header user={user} searchFriendQuery={searchFriendQuery} setSearchFriendQuery={this.setSearchFriendQuery} />
                 <div className="row">
-                    { children || <Home /> }
+                    { childrenWithProps || <Home user={user} /> }
                 </div>
                 <Footer />
             </div>

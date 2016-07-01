@@ -195,7 +195,7 @@ class User
     public function getFriendsPosts() {
         $conn = DB::getConnection();
         $stmt = $conn->prepare("SELECT posts.* FROM friends JOIN posts ON friends.friend2=posts.\"user\" 
-                                  WHERE friends.friend1=:id OR posts.\"user\"=:id ORDER BY posts.\"createDate\" LIMIT 8");
+                                  WHERE (friends.friend1=:id AND posts.\"isPrivate\"=FALSE) OR posts.\"user\"=:id ORDER BY posts.\"createDate\" LIMIT 8");
         $stmt->execute([":id" => $this->getId()]);
 
         $res = $stmt->fetchAll();

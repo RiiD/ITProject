@@ -77,4 +77,20 @@ class Friends
             return User::fromArray($row);
         }, $res);
     }
+
+    public function serialize() {
+        return [
+            "friend1" => $this->getFriend1(),
+            "friend2" => $this->getFriend2()
+        ];
+    }
+
+    public static function deserialize($arr) {
+        $friends = new Friends();
+
+        $friends->setFriend1($arr["friend1"]);
+        $friends->setFriend2($arr["friend2"]);
+
+        return $friends;
+    }
 }

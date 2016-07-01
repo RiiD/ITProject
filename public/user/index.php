@@ -19,5 +19,12 @@ function get() {
         return;
     }
 
-    echo json_encode($user->serialize());
+    if(array_key_exists("id", $_GET)) {
+        $userId = $_GET["id"];
+        $user = User::find($userId);
+
+        echo json_encode($user->serialize());
+    } else {
+        echo json_encode($user->serialize());
+    }
 }

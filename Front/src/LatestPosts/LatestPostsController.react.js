@@ -10,7 +10,7 @@ const LatestPostsController = React.createClass({
     },
     
     loadPosts: function() {
-        fetch("http://afekaface.lc/user/posts.php", {credentials: 'include'})
+        fetch("/user/posts.php", {credentials: 'include'})
             .then(resp => resp.json())
             .then(posts => this.setState({ isLoading: false, posts: posts }));
     },
@@ -30,10 +30,10 @@ const LatestPostsController = React.createClass({
             posts: nextPosts
         });
 
-        fetch('/post', {
+        fetch('/post/index.php', {
             credentials: 'include',
             method: 'PUT',
-            data: post});
+            body: JSON.stringify(post)});
     },
 
     render: function () {

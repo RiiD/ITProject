@@ -218,4 +218,25 @@ class Comment
             ":id" => $comment->getId()
         ]);
     }
+
+    public function serialize() {
+        return [
+            "id" => $this->getId(),
+            "user" => $this->getUser(),
+            "post" => $this->getPost(),
+            "body" => $this->getBody()
+        ];
+    }
+
+    public static function deserialize($arr) {
+        $comment = new Comment();
+
+        $comment->setBody($arr["body"]);
+        $comment->setLikes($arr["likes"]);
+        $comment->setPost($arr["post"]);
+        $comment->setUser($arr["user"]);
+        $comment->id = $arr["id"];
+
+        return $comment;
+    }
 }

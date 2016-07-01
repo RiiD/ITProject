@@ -1,0 +1,353 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: comments; Type: TABLE; Schema: public; Owner: homestead; Tablespace: 
+--
+
+CREATE TABLE comments (
+    id integer NOT NULL,
+    "user" integer NOT NULL,
+    post integer NOT NULL,
+    likes integer DEFAULT 0 NOT NULL,
+    body text NOT NULL,
+    "createDate" timestamp(6) without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE comments OWNER TO homestead;
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: homestead
+--
+
+CREATE SEQUENCE comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE comments_id_seq OWNER TO homestead;
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: homestead
+--
+
+ALTER SEQUENCE comments_id_seq OWNED BY comments.id;
+
+
+--
+-- Name: friends; Type: TABLE; Schema: public; Owner: homestead; Tablespace: 
+--
+
+CREATE TABLE friends (
+    friend1 integer NOT NULL,
+    friend2 integer NOT NULL
+);
+
+
+ALTER TABLE friends OWNER TO homestead;
+
+--
+-- Name: posts; Type: TABLE; Schema: public; Owner: homestead; Tablespace: 
+--
+
+CREATE TABLE posts (
+    id integer NOT NULL,
+    title character varying(50) NOT NULL,
+    body text NOT NULL,
+    photo character varying(255),
+    "user" integer NOT NULL,
+    likes integer DEFAULT 0 NOT NULL,
+    "createDate" timestamp(6) without time zone DEFAULT now() NOT NULL,
+    "isPrivate" boolean DEFAULT true NOT NULL
+);
+
+
+ALTER TABLE posts OWNER TO homestead;
+
+--
+-- Name: post_id_seq; Type: SEQUENCE; Schema: public; Owner: homestead
+--
+
+CREATE SEQUENCE post_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE post_id_seq OWNER TO homestead;
+
+--
+-- Name: post_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: homestead
+--
+
+ALTER SEQUENCE post_id_seq OWNED BY posts.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: homestead; Tablespace: 
+--
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    username character varying(25) NOT NULL,
+    password character varying(50) NOT NULL,
+    avatar character varying(255) DEFAULT 'default_avatar.jpg'::character varying
+);
+
+
+ALTER TABLE users OWNER TO homestead;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: homestead
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_id_seq OWNER TO homestead;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: homestead
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY comments ALTER COLUMN id SET DEFAULT nextval('comments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY posts ALTER COLUMN id SET DEFAULT nextval('post_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: homestead
+--
+
+COPY comments (id, "user", post, likes, body, "createDate") FROM stdin;
+1	1	1	0	asdfasdf	2016-06-24 13:45:00.428177
+2	1	1	0	asdfasdf	2016-06-24 13:45:02.604214
+3	1	1	0	asdfasdf	2016-06-24 13:45:03.086161
+4	1	1	0	asdfasdf	2016-06-24 13:45:03.82321
+5	1	1	0	asdfasdf	2016-06-24 13:45:04.050332
+6	1	1	0	asdfasdf	2016-06-24 13:45:04.222362
+7	1	1	0	asdfasdf	2016-06-24 13:45:04.397309
+8	1	1	0	asdfasdf	2016-06-24 13:49:25.008349
+\.
+
+
+--
+-- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: homestead
+--
+
+SELECT pg_catalog.setval('comments_id_seq', 8, true);
+
+
+--
+-- Data for Name: friends; Type: TABLE DATA; Schema: public; Owner: homestead
+--
+
+COPY friends (friend1, friend2) FROM stdin;
+1	2
+2	1
+1	13
+\.
+
+
+--
+-- Name: post_id_seq; Type: SEQUENCE SET; Schema: public; Owner: homestead
+--
+
+SELECT pg_catalog.setval('post_id_seq', 12, true);
+
+
+--
+-- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: homestead
+--
+
+COPY posts (id, title, body, photo, "user", likes, "createDate", "isPrivate") FROM stdin;
+10	test	some text	photo	1	0	2016-06-24 13:55:59.382317	t
+11	test	some text	photo	1	0	2016-06-24 13:55:59.757513	t
+12	test	some text	photo	1	0	2016-06-24 13:57:16.167161	t
+1	Test	sdf;lkajsdf;lk	ppp	13	5	2016-06-24 13:42:38.223358	t
+3	test	some text	photo	13	0	2016-06-24 13:52:28.404536	t
+4	test	some text	photo	4	0	2016-06-24 13:53:15.047955	f
+5	test	some text	photo	6	0	2016-06-24 13:53:16.910527	t
+6	test	some text	photo	2	0	2016-06-24 13:53:17.446252	t
+7	test	some text	photo	4	0	2016-06-24 13:53:17.610674	t
+8	test	some text	photo	9	0	2016-06-24 13:54:05.923852	t
+9	test	some text	photo	7	0	2016-06-24 13:54:41.853439	t
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: homestead
+--
+
+COPY users (id, username, password, avatar) FROM stdin;
+4	asdfsdfaa	bbb	ccc
+6	asdfsdsdfsdffaa	bbb	ccc
+7	asdfsdsdfsasdaddffaa	bbb	ccc
+9	aaqq	bbb	ccc
+11	aaqqff	bbb	ccc
+12	aaqqffqweqwe	bbb	ccc
+2	TEST2	bbb	ccc
+1	TEST	202cb962ac59075b964b07152d234b70	default_avatar.jpg
+13	asd	a8f5f167f44f4964e6c998dee827110c	121
+\.
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: homestead
+--
+
+SELECT pg_catalog.setval('users_id_seq', 13, true);
+
+
+--
+-- Name: comments_pkey; Type: CONSTRAINT; Schema: public; Owner: homestead; Tablespace: 
+--
+
+ALTER TABLE ONLY comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: friends_pkey; Type: CONSTRAINT; Schema: public; Owner: homestead; Tablespace: 
+--
+
+ALTER TABLE ONLY friends
+    ADD CONSTRAINT friends_pkey PRIMARY KEY (friend1, friend2);
+
+
+--
+-- Name: post_pkey; Type: CONSTRAINT; Schema: public; Owner: homestead; Tablespace: 
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT post_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: homestead; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users_username_key; Type: CONSTRAINT; Schema: public; Owner: homestead; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
+-- Name: comment_post_fk; Type: FK CONSTRAINT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY comments
+    ADD CONSTRAINT comment_post_fk FOREIGN KEY (post) REFERENCES posts(id) ON DELETE CASCADE;
+
+
+--
+-- Name: comment_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY comments
+    ADD CONSTRAINT comment_user_fk FOREIGN KEY ("user") REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: post_user_fk; Type: FK CONSTRAINT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT post_user_fk FOREIGN KEY ("user") REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_friend_fk1; Type: FK CONSTRAINT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY friends
+    ADD CONSTRAINT user_friend_fk1 FOREIGN KEY (friend1) REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_friend_fk2; Type: FK CONSTRAINT; Schema: public; Owner: homestead
+--
+
+ALTER TABLE ONLY friends
+    ADD CONSTRAINT user_friend_fk2 FOREIGN KEY (friend2) REFERENCES users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

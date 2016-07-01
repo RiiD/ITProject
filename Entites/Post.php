@@ -191,7 +191,7 @@ class Post
      * @return Post
      */
     public static function deserialize($json) {
-        $arr = json_decode($json);
+        $arr = json_decode($json, true);
 
         return static::fromArray($arr);
     }
@@ -310,16 +310,15 @@ class Post
      */
     public static function update(Post $post){
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("UPDATE posts SET title=:title
-            , body=:body, likes=:likes, photo=:photo, \"user\"=:user, isPrivate=:isPrivate WHERE id=:id");
+        $stmt = $conn->prepare("UPDATE posts SET title=:title, body=:body, likes=:likes, photo=:photo, \"user\"=:user, \"isPrivate\"=:isPrivate WHERE id=:id");
         return $stmt->execute([
             ":title" => $post->getTitle(),
              ":body"  => $post->getBody(),
             ":likes" => $post->getLikes(),
             ":photo" => $post->getPhoto(),
-            ":user"  => $post->getUser(),
-            ":id"    => $post->getId(),
-            ":isPrivate" => $post->isPrivate()
+            ":user" => $post->getUser(),
+            ":id" => $post->getId(),
+            ":isPrivate" => $post->isPrivate() ? 1 : 0
         ]);
     }
 
