@@ -1,3 +1,8 @@
+Internet technologies course project
+by Nadir Miralimov 324340413 and Adeem Wattad 205671902
+
+Look in PDF file for diagramms.
+
 Used technologies:
 * PHP
 * PostreSQL
