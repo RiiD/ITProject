@@ -1,4 +1,13 @@
-
+Used technologies:
+* PHP
+* PostreSQL
+* JavaScript
+* Webpack
+* React
+* AJAX
+* Babel
+* CSS
+* HTML
 
 Additional features from FaceBook:
 * Likes
