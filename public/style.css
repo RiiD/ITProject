@@ -1,0 +1,26 @@
+.ComboBox {
+    position: absolute;
+    width: 400px;
+}
+
+.ResultRow {
+    height: 70px;
+}
+
+.ResultRow img {
+    float: left;
+    width: 70px;
+}
+
+.ResultRow .username {
+    float: left;
+}
+
+.ResultRow .make-friend {
+    float: right;
+}
+
+.Results {
+    position: relative;
+    z-index: 1;
+}

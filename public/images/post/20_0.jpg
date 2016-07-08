@@ -1,0 +1,151 @@
+<?php
+
+$placesCount = 5;
+$resFolder = "../html/";
+
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $placePageTemplate = file_get_contents("page.html");
+    $mainPageTemplate = file_get_contents("mainPage.html");
+
+    function createPage($pageData) {
+        global $placePageTemplate;
+
+        return str_replace(array_map(function($item) { return sprintf("{{%s}}", $item); }, array_keys($pageData)),
+            array_values($pageData), $placePageTemplate);
+    }
+
+    function createMainPage($pageNames) {
+        global $mainPageTemplate;
+
+        return str_replace(array_map(function($item) { return sprintf("{{%s}}", $item); }, array_keys($pageNames)),
+            array_values($pageNames), $mainPageTemplate);
+    }
+
+    $pageData = [
+        "place-name" => $_POST["place-name"][0],
+        "place-description" => $_POST["place-description"][0],
+        "place-image-url" => $_POST["place-image-url"][0],
+        "place-thumb-1" => $_POST["place-thumb-1"][0],
+        "place-thumb-2" => $_POST["place-thumb-2"][0],
+        "place-thumb-3" => $_POST["place-thumb-3"][0],
+        "home-link" => $resFolder . "index.html"
+    ];
+
+    $pageNames = [];
+
+    for($i = 0; $i < $placesCount; $i++) {
+        $pageNames["page" . ($i + 1)] = $_POST["place-name"][$i];
+
+        $pageData = [
+            "place-name" => $_POST["place-name"][$i],
+            "place-description" => $_POST["place-description"][$i],
+            "place-image-url" => $_POST["place-image-url"][$i],
+            "place-thumb-1" => $_POST["place-thumb-1"][$i],
+            "place-thumb-2" => $_POST["place-thumb-2"][$i],
+            "place-thumb-3" => $_POST["place-thumb-3"][$i],
+            "home-link" => $resFolder . "index.html"
+        ];
+
+        file_put_contents($resFolder . $i . ".html", createPage($pageData));
+        file_put_contents($resFolder . "index.html", createMainPage($pageNames));
+    }
+
+    header("Location: $resFolder");
+
+    die();
+}
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Favorite places maker</title>
+
+    <!-- BOOTSTRAP_CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+          integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+          crossorigin="anonymous">
+    <!-- /BOOTSTRAP_CSS -->
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- CONTENT -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Favorite places page creator</h1>
+            <p>Here you can create a web page which contains your favorite places. Fill in next fields.</p>
+        </div>
+    </div>
+    <form id="form" method="post">
+        <?php for ($i = 0; $i < $placesCount; $i++) { ?>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1>Place <?=$i + 1?></h1>
+                    </div>
+                </div>
+
+                <div class="col-md-12 elements">
+
+                    <div class="form-group">
+                        <label>Place name</label>
+                        <input type="text" class="form-control"name="place-name[]" placeholder="New York City">
+                    </div>
+
+                    <div class="form-group place-description">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="3" name="place-description[]" placeholder="Best place ever!"></textarea>
+                    </div>
+
+                    <div class="form-group place-label">
+                        <label>Image url</label>
+                        <input type="text" class="form-control" name="place-image-url[]" placeholder="http://...">
+                    </div>
+
+                    <div class="form-group place-label">
+                        <label>Thumbnail 1</label>
+                        <input type="text" class="form-control" name="place-thumb-1[]" placeholder="http://...">
+                    </div>
+                    <div class="form-group place-label">
+                        <label>Thumbnail 2</label>
+                        <input type="text" class="form-control" name="place-thumb-2[]" placeholder="http://...">
+                    </div>
+                    <div class="form-group place-label">
+                        <label>Thumbnail 3</label>
+                        <input type="text" class="form-control" name="place-thumb-3[]" placeholder="http://...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php }?>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group place-label">
+                    <button class="btn" type="submit">Create</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+<!-- /CONTENT -->
+
+<!-- JQUERY -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<!-- /JQUERY -->
+
+<!-- BOOTSTRAP_JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+        integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+        crossorigin="anonymous"></script>
+<!-- /BOOTSTRAP_JS -->
+
+</body>
+</html>

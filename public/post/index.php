@@ -1,8 +1,9 @@
 <?php
 
 include_once dirname(__FILE__) . "/../../auth.php";
+include_once dirname(__FILE__) . "/../../utils.php";
 include_once dirname(__FILE__) . "/../../Entites/Post.php";
-
+include_once dirname(__FILE__) . "/../../Entites/PostImage.php";
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -33,10 +34,21 @@ function post() {
         return;
     }
 
-    $body = json_decode(file_get_contents("php://input"));
-    $post = Post::create($body["title"], $body["body"], $body["photo"], $user->getId(), $body["isPrivate"]);
-    
-    return $post->serialize();
+    $post = Post::create($_POST["title"], $_POST["body"], $user->getId(), array_key_exists("isPrivate", $_POST));
+
+    $imagesTmpPath = $_FILES["file"]["tmp_name"];
+
+    foreach ($imagesTmpPath as $key => $tmpImage) {
+        $new_name = POST_IMAGES_DIR . $post->getId() . "_" . $key . ".jpg";
+        $new_thumb_name = POST_THUMB_DIR . $post->getId() . "_" . $key . ".jpg";
+
+        copy($tmpImage, $new_name);
+
+        createThumb($new_name, $new_thumb_name, POST_THUMB_WIDTH);
+        PostImage::create($post->getId(), $post->getId() . "_" . $key . ".jpg");
+    }
+
+    echo json_encode(preparePost($post));
 }
 
 function put() {
@@ -47,7 +59,7 @@ function put() {
         return;
     }
 
-    $post = Post::deserialize(file_get_contents("php://input"));
+    $post = Post::deserialize(json_decode(file_get_contents("php://input"), true));
     $res = Post::update($post);
 
     if($res) {
@@ -56,7 +68,7 @@ function put() {
         http_response_code (500);
     }
 
-    echo $post->serialize();
+    echo json_encode(preparePost($post));
 }
 
 function delete() {
@@ -99,7 +111,7 @@ function get() {
                 return;
             }
 
-            echo $post->serialize();
+            echo json_encode(preparePost($post));
         } else {
             http_response_code(404);
             return;
@@ -108,7 +120,11 @@ function get() {
 
         $posts = Post::findByUser($user->getId());
 
-        printf("[%s]", join(",", array_map(function(Post $post) { return $post->serialize(); }, $posts)));
+        $sPosts = array_map(function(Post $post) {
+            return preparePost($post);
+        }, $posts);
+
+        echo json_encode($sPosts);
 
     }
 }

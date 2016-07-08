@@ -58,25 +58,25 @@
 
 	var _Layout2 = _interopRequireDefault(_Layout);
 
-	var _Home = __webpack_require__(238);
+	var _Home = __webpack_require__(241);
 
 	var _Home2 = _interopRequireDefault(_Home);
 
-	var _PostRootReact = __webpack_require__(242);
+	var _PostRootReact = __webpack_require__(246);
 
 	var _PostRootReact2 = _interopRequireDefault(_PostRootReact);
 
-	var _Create = __webpack_require__(243);
+	var _PostAddControllerReact = __webpack_require__(245);
 
-	var _Create2 = _interopRequireDefault(_Create);
-
-	var _FriendsControllerReact = __webpack_require__(244);
-
-	var _FriendsControllerReact2 = _interopRequireDefault(_FriendsControllerReact);
+	var _PostAddControllerReact2 = _interopRequireDefault(_PostAddControllerReact);
 
 	var _PostPage = __webpack_require__(247);
 
 	var _PostPage2 = _interopRequireDefault(_PostPage);
+
+	var _MyPosts = __webpack_require__(253);
+
+	var _MyPosts2 = _interopRequireDefault(_MyPosts);
 
 	var _reactRouter = __webpack_require__(175);
 
@@ -93,9 +93,9 @@
 	            _reactRouter.Route,
 	            { path: "post", component: _PostRootReact2.default },
 	            _react2.default.createElement(_reactRouter.Route, { path: ":id", component: _PostPage2.default }),
-	            _react2.default.createElement(_reactRouter.Route, { path: "create", component: _Create2.default })
+	            _react2.default.createElement(_reactRouter.Route, { path: "create", component: _PostAddControllerReact2.default })
 	        ),
-	        _react2.default.createElement(_reactRouter.Route, { path: "search-friends", component: _FriendsControllerReact2.default })
+	        _react2.default.createElement(_reactRouter.Route, { path: "my-posts", component: _MyPosts2.default })
 	    )
 	), document.getElementById('app'));
 
@@ -20410,11 +20410,11 @@
 
 	var _Header2 = _interopRequireDefault(_Header);
 
-	var _Footer = __webpack_require__(237);
+	var _Footer = __webpack_require__(240);
 
 	var _Footer2 = _interopRequireDefault(_Footer);
 
-	var _Home = __webpack_require__(238);
+	var _Home = __webpack_require__(241);
 
 	var _Home2 = _interopRequireDefault(_Home);
 
@@ -21946,6 +21946,10 @@
 
 	var _reactRouter = __webpack_require__(175);
 
+	var _ComboBoxReact = __webpack_require__(237);
+
+	var _ComboBoxReact2 = _interopRequireDefault(_ComboBoxReact);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -21966,13 +21970,7 @@
 	    _createClass(Header, [{
 	        key: "render",
 	        value: function render() {
-	            var _this2 = this;
-
-	            var _props = this.props;
-	            var user = _props.user;
-	            var searchFriendQuery = _props.searchFriendQuery;
-	            var setSearchFriendQuery = _props.setSearchFriendQuery;
-	            var router = _props.router;
+	            var user = this.props.user;
 
 
 	            return _react2.default.createElement(
@@ -22001,37 +21999,30 @@
 	                                { className: "nav navbar-nav" },
 	                                _react2.default.createElement(
 	                                    "li",
-	                                    { className: "active" },
+	                                    null,
 	                                    _react2.default.createElement(
 	                                        _reactRouter.Link,
-	                                        { to: "/posts" },
+	                                        { to: "/" },
 	                                        "Posts"
 	                                    )
-	                                )
-	                            ),
-	                            _react2.default.createElement(
-	                                "form",
-	                                { className: "navbar-form navbar-left", role: "search", onSubmit: function onSubmit(e) {
-	                                        e.preventDefault();router.push("/search-friends");
-	                                    } },
-	                                _react2.default.createElement(
-	                                    "div",
-	                                    { className: "form-group" },
-	                                    _react2.default.createElement("input", { type: "text",
-	                                        className: "form-control",
-	                                        placeholder: "Search friends",
-	                                        ref: function ref(r) {
-	                                            return _this2.s = r;
-	                                        },
-	                                        value: searchFriendQuery,
-	                                        onChange: function onChange() {
-	                                            setSearchFriendQuery(_this2.s.value);
-	                                        } })
 	                                ),
 	                                _react2.default.createElement(
-	                                    _reactRouter.Link,
-	                                    { className: "btn btn-default", to: "/search-friends", role: "button" },
-	                                    "Find"
+	                                    "li",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        _reactRouter.Link,
+	                                        { to: "/my-posts" },
+	                                        "My posts"
+	                                    )
+	                                ),
+	                                _react2.default.createElement(
+	                                    "li",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        "div",
+	                                        { className: "nav navbar-nav navbar-left" },
+	                                        _react2.default.createElement(_ComboBoxReact2.default, null)
+	                                    )
 	                                )
 	                            ),
 	                            _react2.default.createElement(
@@ -27644,6 +27635,230 @@
 /* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* WEBPACK VAR INJECTION */(function(fetch) {"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _ResultsReact = __webpack_require__(238);
+
+	var _ResultsReact2 = _interopRequireDefault(_ResultsReact);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ComboBox = _react2.default.createClass({
+	    displayName: "ComboBox",
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            query: "",
+	            friends: [],
+	            isSuggestionsVisible: false
+	        };
+	    },
+
+	    onChange: function onChange() {
+	        this.setState({
+	            query: this.inputBox.value,
+	            isSuggestionsVisible: true
+	        });
+	    },
+
+	    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+	        if (this.state.isSuggestionsVisible && prevState.query !== this.state.query) {
+	            if (this.state.query.length) {
+	                this.loadFriends(this.state.query);
+	            } else {
+	                this.setState({ friends: [] });
+	            }
+	        }
+	    },
+
+	    loadFriends: function loadFriends(query) {
+	        var _this = this;
+
+	        fetch("/user/friends.php?query=" + query, { credentials: 'include' }).then(function (resp) {
+	            return resp.json();
+	        }).then(function (friends) {
+	            return _this.setState({ friends: friends });
+	        });
+	    },
+
+	    hideSuggestions: function hideSuggestions() {
+	        this.setState({ isSuggestionsVisible: false, query: "" });
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        window.addEventListener("click", this.hideSuggestions);
+	    },
+
+	    componentWillUnmount: function componentWillUnmount() {
+	        window.removeEventListener("click", this.hideSuggestions);
+	    },
+
+	    makeFriend: function makeFriend(index) {
+	        var friends = this.state.friends;
+
+	        var friend = friends[index];
+
+	        var nextFriends = friends.slice(0, index).concat(friends.slice(index + 1));
+
+	        this.setState({
+	            friends: nextFriends
+	        });
+
+	        fetch('/user/friends.php', {
+	            credentials: 'include',
+	            method: 'POST',
+	            body: JSON.stringify({ friend: friend.id }) });
+	    },
+
+
+	    render: function render() {
+	        var _this2 = this;
+
+	        var _state = this.state;
+	        var query = _state.query;
+	        var isSuggestionsVisible = _state.isSuggestionsVisible;
+	        var friends = _state.friends;
+
+
+	        return _react2.default.createElement(
+	            "div",
+	            { className: "ComboBox", onClick: function onClick(ev) {
+	                    return ev.stopPropagation();
+	                } },
+	            _react2.default.createElement("input", { type: "text",
+	                value: query,
+	                onChange: this.onChange,
+	                ref: function ref(r) {
+	                    return _this2.inputBox = r;
+	                },
+	                className: "form-control", placeholder: "Find friends..." }),
+	            isSuggestionsVisible && _react2.default.createElement(_ResultsReact2.default, { friends: friends, makeFriend: this.makeFriend })
+	        );
+	    }
+	});
+
+	exports.default = ComboBox;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
+
+/***/ },
+/* 238 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _ResultRowReact = __webpack_require__(239);
+
+	var _ResultRowReact2 = _interopRequireDefault(_ResultRowReact);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Results = _react2.default.createClass({
+	    displayName: "Results",
+
+	    render: function render() {
+	        var _props = this.props;
+	        var friends = _props.friends;
+	        var makeFriend = _props.makeFriend;
+
+
+	        return _react2.default.createElement(
+	            "div",
+	            { className: "Results" },
+	            _react2.default.createElement(
+	                "ul",
+	                { className: "list-group" },
+	                friends.map(function (friend, index) {
+	                    return _react2.default.createElement(
+	                        "li",
+	                        { key: index, className: "list-group-item" },
+	                        _react2.default.createElement(_ResultRowReact2.default, { friend: friend, makeFriend: makeFriend.bind(null, index) })
+	                    );
+	                }),
+	                friends.length == 0 && _react2.default.createElement(
+	                    "li",
+	                    { className: "list-group-item" },
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        "Friends not found!"
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	exports.default = Results;
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ResultRow = _react2.default.createClass({
+	    displayName: "ResultRow",
+
+	    render: function render() {
+	        var _props = this.props;
+	        var friend = _props.friend;
+	        var makeFriend = _props.makeFriend;
+
+
+	        return _react2.default.createElement(
+	            "div",
+	            { className: "ResultRow" },
+	            _react2.default.createElement("img", { src: "/images/user/" + friend.id + ".jpg" }),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "username" },
+	                friend.username
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "make-friend" },
+	                _react2.default.createElement(
+	                    "a",
+	                    { onClick: makeFriend, href: "#" },
+	                    "Make friend"
+	                )
+	            )
+	        );
+	    }
+	});
+
+	exports.default = ResultRow;
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -27690,7 +27905,7 @@
 	exports.default = Footer;
 
 /***/ },
-/* 238 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27705,7 +27920,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _LatestPostsController = __webpack_require__(239);
+	var _LatestPostsController = __webpack_require__(242);
 
 	var _LatestPostsController2 = _interopRequireDefault(_LatestPostsController);
 
@@ -27740,7 +27955,7 @@
 	exports.default = Home;
 
 /***/ },
-/* 239 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(fetch) {"use strict";
@@ -27753,11 +27968,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _PostsList = __webpack_require__(240);
+	var _PostsList = __webpack_require__(243);
 
 	var _PostsList2 = _interopRequireDefault(_PostsList);
 
+	var _PostAddController = __webpack_require__(245);
+
+	var _PostAddController2 = _interopRequireDefault(_PostAddController);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	var LatestPostsController = _react2.default.createClass({
 	    displayName: "LatestPostsController",
@@ -27781,6 +28002,15 @@
 
 	    componentDidMount: function componentDidMount() {
 	        this.loadPosts();
+	    },
+
+	    addPost: function addPost(post) {
+	        var posts = this.state.posts;
+
+
+	        this.setState({
+	            posts: [post].concat(_toConsumableArray(posts))
+	        });
 	    },
 
 	    postSave: function postSave(index, post) {
@@ -27812,7 +28042,20 @@
 	            "div",
 	            null,
 	            "Loading..."
-	        ) : _react2.default.createElement(_PostsList2.default, { posts: posts, postSave: this.postSave });
+	        ) : _react2.default.createElement(
+	            "div",
+	            { className: "row" },
+	            _react2.default.createElement(
+	                "div",
+	                { className: "col-md-12" },
+	                _react2.default.createElement(_PostAddController2.default, { onAddPost: this.addPost })
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "col-md-12" },
+	                _react2.default.createElement(_PostsList2.default, { posts: posts, postSave: this.postSave })
+	            )
+	        );
 	    }
 	});
 
@@ -27820,7 +28063,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
 
 /***/ },
-/* 240 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27833,7 +28076,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Post = __webpack_require__(241);
+	var _Post = __webpack_require__(244);
 
 	var _Post2 = _interopRequireDefault(_Post);
 
@@ -27846,16 +28089,17 @@
 	        var _props = this.props;
 	        var posts = _props.posts;
 	        var postSave = _props.postSave;
+	        var location = _props.location;
 
 
 	        return _react2.default.createElement(
 	            "ul",
-	            null,
+	            { className: "list-unstyled" },
 	            posts.map(function (post, index) {
 	                return _react2.default.createElement(
 	                    "li",
 	                    { key: post.id },
-	                    _react2.default.createElement(_Post2.default, { post: post, postSave: postSave.bind(null, index) })
+	                    _react2.default.createElement(_Post2.default, { post: post, postSave: postSave.bind(null, index), location: location })
 	                );
 	            })
 	        );
@@ -27865,7 +28109,7 @@
 	exports.default = PostList;
 
 /***/ },
-/* 241 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27886,57 +28130,81 @@
 	    displayName: "Post",
 
 
-	    like: function like() {
-	        var _props = this.props;
-	        var post = _props.post;
-	        var postSave = _props.postSave;
+	    save: function save(newPost) {
+	        var postSave = this.props.postSave;
 
 
-	        postSave(Object.assign({}, post, { likes: post.likes + 1 }));
+	        postSave(newPost);
 	    },
 
 	    render: function render() {
-	        var _props$post = this.props.post;
+	        var _props = this.props;
+	        var post = _props.post;
+	        var _props$post = _props.post;
 	        var id = _props$post.id;
 	        var user = _props$post.user;
 	        var title = _props$post.title;
-	        var body = _props$post.body;
 	        var likes = _props$post.likes;
+	        var isPrivate = _props$post.isPrivate;
+	        var location = _props.location;
 
 
 	        return _react2.default.createElement(
 	            "div",
-	            { className: "Post" },
+	            { className: "Post well" },
 	            _react2.default.createElement(
-	                "h2",
-	                null,
-	                user,
-	                " "
-	            ),
-	            _react2.default.createElement(
-	                _reactRouter.Link,
-	                { to: "/post/" + id },
+	                "div",
+	                { className: "row" },
 	                _react2.default.createElement(
-	                    "h2",
-	                    null,
-	                    title,
-	                    " "
+	                    "div",
+	                    { className: "col-md-10" },
+	                    _react2.default.createElement(
+	                        _reactRouter.Link,
+	                        { to: "/post/" + id },
+	                        _react2.default.createElement(
+	                            "h2",
+	                            null,
+	                            title,
+	                            " "
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        "p",
+	                        null,
+	                        "Author: ",
+	                        user.username
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "col-md-2" },
+	                    location == "MyPosts" ? _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "h4",
+	                            null,
+	                            "Private: "
+	                        ),
+	                        _react2.default.createElement("input", { type: "checkbox",
+	                            checked: isPrivate,
+	                            onChange: this.save.bind(null, Object.assign({}, post, { isPrivate: !isPrivate })) })
+	                    ) : _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "h4",
+	                            null,
+	                            likes
+	                        ),
+	                        _react2.default.createElement(
+	                            "button",
+	                            { type: "button",
+	                                onClick: this.save.bind(null, Object.assign({}, post, { likes: likes + 1 })) },
+	                            "Like"
+	                        )
+	                    )
 	                )
-	            ),
-	            _react2.default.createElement(
-	                "p",
-	                null,
-	                body
-	            ),
-	            _react2.default.createElement(
-	                "button",
-	                { type: "button", onClick: this.like },
-	                "Like"
-	            ),
-	            _react2.default.createElement(
-	                "h4",
-	                null,
-	                likes
 	            )
 	        );
 	    }
@@ -27945,7 +28213,137 @@
 	exports.default = Post;
 
 /***/ },
-/* 242 */
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(fetch) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var PostAddController = _react2.default.createClass({
+	    displayName: 'PostAddController',
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            numberOfFiles: 1
+	        };
+	    },
+
+	    onSubmit: function onSubmit(ev) {
+	        var onAddPost = this.props.onAddPost;
+
+
+	        ev.preventDefault();
+
+	        fetch('./post/index.php', {
+	            credentials: 'include',
+	            method: 'POST',
+	            body: new FormData(ev.target)
+	        }).then(function (resp) {
+	            return resp.json();
+	        }).then(onAddPost);
+	    },
+
+	    addFileField: function addFileField(ev) {
+	        var numberOfFiles = this.state.numberOfFiles;
+
+
+	        ev.preventDefault();
+
+	        this.setState({
+	            numberOfFiles: numberOfFiles + 1
+	        });
+	    },
+
+	    render: function render() {
+	        var numberOfFiles = this.state.numberOfFiles;
+
+
+	        return _react2.default.createElement(
+	            'div',
+	            { className: 'PostAdd well' },
+	            _react2.default.createElement(
+	                'h3',
+	                null,
+	                'Add post'
+	            ),
+	            _react2.default.createElement(
+	                'form',
+	                { onSubmit: this.onSubmit },
+	                _react2.default.createElement(
+	                    'div',
+	                    { 'class': 'form-group' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        { htmlFor: 'title' },
+	                        'Title'
+	                    ),
+	                    _react2.default.createElement('input', { type: 'text', className: 'form-control', rows: '3', name: 'title', id: 'title' })
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { 'class': 'form-group' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        { htmlFor: 'body' },
+	                        'Body'
+	                    ),
+	                    _react2.default.createElement('textarea', { className: 'form-control', rows: '3', name: 'body', id: 'body' })
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        _react2.default.createElement('input', { type: 'checkbox', name: 'isPrivate' }),
+	                        ' Private post'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    { 'class': 'form-group' },
+	                    _react2.default.createElement(
+	                        'label',
+	                        null,
+	                        'Images'
+	                    ),
+	                    Array.apply(null, { length: numberOfFiles }).map(Function.call, Number).map(function (i) {
+	                        return _react2.default.createElement('input', { key: i, type: 'file', name: 'file[]', id: 'file[]', accept: 'image/jpeg' });
+	                    })
+	                ),
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'a',
+	                        { onClick: this.addFileField, href: 'Add file' },
+	                        'Add file'
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { type: 'submit', className: 'btn btn-primary' },
+	                    'Submit'
+	                )
+	            )
+	        );
+	    }
+	});
+
+	exports.default = PostAddController;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
+
+/***/ },
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -27996,224 +28394,6 @@
 	exports.default = PostRoot;
 
 /***/ },
-/* 243 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Create = function (_React$Component) {
-	    _inherits(Create, _React$Component);
-
-	    function Create() {
-	        _classCallCheck(this, Create);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Create).apply(this, arguments));
-	    }
-
-	    _createClass(Create, [{
-	        key: "render",
-	        value: function render() {
-	            return _react2.default.createElement(
-	                "div",
-	                null,
-	                "Here will be post create page"
-	            );
-	        }
-	    }]);
-
-	    return Create;
-	}(_react2.default.Component);
-
-	exports.default = Create;
-
-/***/ },
-/* 244 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(fetch) {"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _FriendLists = __webpack_require__(245);
-
-	var _FriendLists2 = _interopRequireDefault(_FriendLists);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var FriendsController = _react2.default.createClass({
-	    displayName: "FriendsController",
-
-	    getInitialState: function getInitialState() {
-	        return {
-	            isLoading: true,
-	            friends: []
-	        };
-	    },
-
-	    loadFriends: function loadFriends() {
-	        var _this = this;
-
-	        var searchFriendQuery = this.props.searchFriendQuery;
-
-
-	        fetch("/user/friends.php?query=" + searchFriendQuery, { credentials: 'include' }).then(function (resp) {
-	            return resp.json();
-	        }).then(function (friends) {
-	            return _this.setState({ isLoading: false, friends: friends });
-	        });
-	    },
-
-	    componentDidMount: function componentDidMount() {
-	        this.loadFriends();
-	    },
-
-	    makeFriend: function makeFriend(index, friend) {
-	        var friends = this.state.friends;
-
-
-	        var nextFriends = friends.slice(0, index).concat(friends.slice(index + 1));
-
-	        this.setState({
-	            friends: nextFriends
-	        });
-
-	        fetch('/user/friends.php', {
-	            credentials: 'include',
-	            method: 'POST',
-	            body: JSON.stringify({ friend: friend.id }) });
-	    },
-
-
-	    render: function render() {
-	        var _state = this.state;
-	        var friends = _state.friends;
-	        var isLoading = _state.isLoading;
-	        var searchFriendQuery = this.props.searchFriendQuery;
-
-
-	        console.log(searchFriendQuery);
-
-	        return isLoading ? _react2.default.createElement(
-	            "div",
-	            null,
-	            "Loading..."
-	        ) : _react2.default.createElement(_FriendLists2.default, { friends: friends, makeFriend: this.makeFriend });
-	    }
-	});
-
-	exports.default = FriendsController;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
-
-/***/ },
-/* 245 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Friend = __webpack_require__(246);
-
-	var _Friend2 = _interopRequireDefault(_Friend);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var FriendList = _react2.default.createClass({
-	    displayName: "FriendList",
-
-	    render: function render() {
-	        var _props = this.props;
-	        var friends = _props.friends;
-	        var makeFriend = _props.makeFriend;
-
-
-	        return _react2.default.createElement(
-	            "ul",
-	            null,
-	            friends.map(function (friend, index) {
-	                return _react2.default.createElement(
-	                    "li",
-	                    { key: friend.id },
-	                    _react2.default.createElement(_Friend2.default, { friend: friend, makeFriend: makeFriend.bind(null, index) })
-	                );
-	            })
-	        );
-	    }
-	});
-
-	exports.default = FriendList;
-
-/***/ },
-/* 246 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Friend = _react2.default.createClass({
-	    displayName: "Friend",
-
-	    render: function render() {
-	        var _props = this.props;
-	        var friend = _props.friend;
-	        var makeFriend = _props.makeFriend;
-
-
-	        return _react2.default.createElement(
-	            "div",
-	            null,
-	            _react2.default.createElement(
-	                "h3",
-	                { onClick: makeFriend.bind(null, friend) },
-	                friend.username
-	            ),
-	            _react2.default.createElement("img", { src: "/images/avatars/{friend.avatar}", alt: "friend.avatar" })
-	        );
-	    }
-	});
-
-	exports.default = Friend;
-
-/***/ },
 /* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -28231,6 +28411,10 @@
 
 	var _CommentController2 = _interopRequireDefault(_CommentController);
 
+	var _PostImages = __webpack_require__(252);
+
+	var _PostImages2 = _interopRequireDefault(_PostImages);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var PostPage = _react2.default.createClass({
@@ -28240,8 +28424,7 @@
 	    getInitialState: function getInitialState() {
 	        return {
 	            isLoading: true,
-	            post: {},
-	            user: {}
+	            post: {}
 	        };
 	    },
 
@@ -28252,24 +28435,35 @@
 	        this.getPost(id);
 	    },
 
+	    like: function like(ev) {
+	        var post = this.state.post;
+
+	        var nextPost = Object.assign({}, post, { likes: post.likes + 1 });
+
+	        ev.preventDefault();
+
+	        this.setState({
+	            post: nextPost
+	        });
+
+	        this.postSave(nextPost);
+	    },
+
+	    postSave: function postSave(post) {
+	        fetch('/post/index.php', {
+	            credentials: 'include',
+	            method: 'PUT',
+	            body: JSON.stringify(post) });
+	    },
+
+
 	    getPost: function getPost(id) {
 	        var _this = this;
 
 	        fetch("/post/?id=" + id, { credentials: 'include' }).then(function (resp) {
 	            return resp.json();
 	        }).then(function (post) {
-	            _this.setState({ post: post });
-	            return post.user;
-	        }).then(this.getUser);
-	    },
-
-	    getUser: function getUser(id) {
-	        var _this2 = this;
-
-	        fetch("/user/?id=" + id, { credentials: 'include' }).then(function (resp) {
-	            return resp.json();
-	        }).then(function (user) {
-	            return _this2.setState({ isLoading: false, user: user });
+	            return _this.setState({ post: post, isLoading: false });
 	        });
 	    },
 
@@ -28277,7 +28471,7 @@
 	        var _state = this.state;
 	        var isLoading = _state.isLoading;
 	        var post = _state.post;
-	        var user = _state.user;
+	        var user = _state.post.user;
 
 
 	        return isLoading ? _react2.default.createElement(
@@ -28289,34 +28483,57 @@
 	            null,
 	            _react2.default.createElement(
 	                "div",
-	                { className: "row" },
+	                { className: "panel panel-default" },
 	                _react2.default.createElement(
 	                    "div",
-	                    { className: "col-md-12" },
+	                    { className: "panel-heading" },
 	                    _react2.default.createElement(
-	                        "h1",
-	                        null,
-	                        post.title
-	                    )
-	                )
-	            ),
-	            _react2.default.createElement(
-	                "div",
-	                { className: "row" },
-	                _react2.default.createElement(
-	                    "div",
-	                    { className: "col-md-6" },
-	                    _react2.default.createElement(
-	                        "h5",
-	                        null,
+	                        "div",
+	                        { className: "row" },
 	                        _react2.default.createElement(
-	                            "b",
-	                            null,
-	                            "Author"
+	                            "div",
+	                            { className: "col-md-10" },
+	                            _react2.default.createElement(
+	                                "h4",
+	                                null,
+	                                post.title
+	                            ),
+	                            _react2.default.createElement(
+	                                "p",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "b",
+	                                    null,
+	                                    "Author"
+	                                ),
+	                                ": ",
+	                                user.username
+	                            )
 	                        ),
-	                        ": ",
-	                        user.username
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "col-md-1" },
+	                            _react2.default.createElement(
+	                                "span",
+	                                null,
+	                                post.likes
+	                            )
+	                        ),
+	                        _react2.default.createElement(
+	                            "div",
+	                            { className: "col-md-1" },
+	                            _react2.default.createElement(
+	                                "a",
+	                                { href: "Like", onClick: this.like },
+	                                _react2.default.createElement("span", { className: "glyphicon glyphicon-thumbs-up pull-right", "aria-hidden": "true" })
+	                            )
+	                        )
 	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "panel-body" },
+	                    post.body
 	                )
 	            ),
 	            _react2.default.createElement(
@@ -28325,11 +28542,7 @@
 	                _react2.default.createElement(
 	                    "div",
 	                    { className: "col-md-12" },
-	                    _react2.default.createElement(
-	                        "p",
-	                        null,
-	                        post.body
-	                    )
+	                    post.imgs.length > 0 && _react2.default.createElement(_PostImages2.default, { images: post.imgs })
 	                )
 	            ),
 	            _react2.default.createElement(
@@ -28672,6 +28885,184 @@
 	});
 
 	exports.default = CommentForm;
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var PostImages = _react2.default.createClass({
+	    displayName: "PostImages",
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            currentImage: 0
+	        };
+	    },
+
+	    selectImage: function selectImage(index) {
+	        this.setState({
+	            currentImage: index
+	        });
+	    },
+
+	    render: function render() {
+	        var _this = this;
+
+	        var images = this.props.images;
+	        var currentImage = this.state.currentImage;
+
+
+	        return _react2.default.createElement(
+	            "div",
+	            { className: "PostImages" },
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "col-md-12" },
+	                    _react2.default.createElement("img", { src: "/images/post/" + images[currentImage].name, className: "img-rounded", width: "100%" })
+	                )
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "row" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "col-md-12" },
+	                    images.map(function (img, index) {
+	                        return _react2.default.createElement("img", { key: index,
+	                            onClick: _this.selectImage.bind(null, index),
+	                            src: "/images/post/thumb/" + images[index].name,
+	                            className: "img-thumbnail" });
+	                    })
+	                )
+	            )
+	        );
+	    }
+	});
+
+	exports.default = PostImages;
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(fetch) {"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _PostsList = __webpack_require__(243);
+
+	var _PostsList2 = _interopRequireDefault(_PostsList);
+
+	var _PostAddController = __webpack_require__(245);
+
+	var _PostAddController2 = _interopRequireDefault(_PostAddController);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var MyPosts = _react2.default.createClass({
+	    displayName: "MyPosts",
+
+	    getInitialState: function getInitialState() {
+	        return {
+	            isLoading: true,
+	            posts: []
+	        };
+	    },
+
+	    loadPosts: function loadPosts() {
+	        var _this = this;
+
+	        fetch("/post/index.php", { credentials: 'include' }).then(function (resp) {
+	            return resp.json();
+	        }).then(function (posts) {
+	            return _this.setState({ isLoading: false, posts: posts });
+	        });
+	    },
+
+	    componentDidMount: function componentDidMount() {
+	        this.loadPosts();
+	    },
+
+	    addPost: function addPost(post) {
+	        var posts = this.state.posts;
+
+
+	        this.setState({
+	            posts: [post].concat(_toConsumableArray(posts))
+	        });
+	    },
+
+	    postSave: function postSave(index, post) {
+	        var posts = this.state.posts;
+
+
+	        var nextPosts = posts.slice(0);
+
+	        nextPosts[index] = post;
+
+	        this.setState({
+	            posts: nextPosts
+	        });
+
+	        fetch('/post/index.php', {
+	            credentials: 'include',
+	            method: 'PUT',
+	            body: JSON.stringify(post) });
+	    },
+
+
+	    render: function render() {
+	        var _state = this.state;
+	        var posts = _state.posts;
+	        var isLoading = _state.isLoading;
+
+
+	        return isLoading ? _react2.default.createElement(
+	            "div",
+	            null,
+	            "Loading..."
+	        ) : _react2.default.createElement(
+	            "div",
+	            { className: "row" },
+	            _react2.default.createElement(
+	                "div",
+	                { className: "col-md-12" },
+	                _react2.default.createElement(_PostAddController2.default, { onAddPost: this.addPost })
+	            ),
+	            _react2.default.createElement(
+	                "div",
+	                { className: "col-md-12" },
+	                _react2.default.createElement(_PostsList2.default, { posts: posts, postSave: this.postSave, location: "MyPosts" })
+	            )
+	        );
+	    }
+	});
+
+	exports.default = MyPosts;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(169)))
 
 /***/ }
 /******/ ]);

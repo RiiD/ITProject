@@ -22,11 +22,6 @@ class User
     private $password;
 
     /**
-     * @var string
-     */
-    private $avatar;
-
-    /**
      * @var array
      */
     private $posts;
@@ -39,22 +34,6 @@ class User
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAvatar()
-    {
-        return $this->avatar;
-    }
-
-    /**
-     * @param string $avatar
-     */
-    public function setAvatar($avatar)
-    {
-        $this->avatar = $avatar;
     }
 
     /**
@@ -159,16 +138,14 @@ class User
      *
      * @param $username
      * @param $password
-     * @param $avatar
      * @return User
      */
-    public static function create($username, $password, $avatar) {
+    public static function create($username, $password) {
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("INSERT INTO users (username, password, avatar) VALUES (:username, :password, :avatar) RETURNING id");
+        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (:username, :password) RETURNING id");
         $stmt->execute([
             ":username" => $username,
-            ":password" => md5($password),
-            ":avatar" => $avatar
+            ":password" => md5($password)
         ]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         $id = $res["id"];
@@ -176,7 +153,6 @@ class User
         return static::fromArray([
             "username" => $username,
             "password" => $password,
-            "avatar" => $avatar,
             "id" => $id
         ]);
     }
@@ -185,7 +161,6 @@ class User
         $user = new User();
 
         $user->setPassword($arr["password"]);
-        $user->setAvatar($arr["avatar"]);
         $user->setUsername($arr["username"]);
         $user->id = $arr["id"];
 
@@ -194,14 +169,14 @@ class User
 
     public function getFriendsPosts() {
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("SELECT posts.* FROM friends JOIN posts ON friends.friend2=posts.\"user\" 
-                                  WHERE (friends.friend1=:id AND posts.\"isPrivate\"=FALSE) OR posts.\"user\"=:id ORDER BY posts.\"createDate\" LIMIT 8");
-        $stmt->execute([":id" => $this->getId()]);
+        $stmt = $conn->prepare("SELECT * FROM ((SELECT * FROM posts WHERE \"user\"=:id1 ORDER BY \"createDate\" DESC LIMIT 8) UNION (SELECT posts.* FROM friends JOIN posts ON friends.friend2=posts.\"user\" 
+                                  WHERE friends.friend1=:id2 AND posts.\"isPrivate\"=FALSE ORDER BY posts.\"createDate\" DESC LIMIT 8)) AS a ORDER BY \"createDate\" DESC LIMIT 8");
+        $stmt->execute([":id1" => $this->getId(), ":id2" => $this->getId()]);
 
         $res = $stmt->fetchAll();
 
         return array_map(function($row) {
-            return Post::fromArray($row);
+            return Post::deserialize($row);
         }, $res);
     }
 
@@ -230,8 +205,7 @@ class User
     public function serialize() {
         return [
             "id" => $this->getId(),
-            "username" => $this->getUsername(),
-            "avatar" => $this->getAvatar()
+            "username" => $this->getUsername()
         ];
     }
 }

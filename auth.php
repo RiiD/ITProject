@@ -31,14 +31,14 @@ function getLoggedInUser() {
     return false;
 }
 
-function signup($username, $password, $avatar) {
+function signup($username, $password) {
     $user = User::findByUsername($username);
 
     if(!$user){
         return false;
     }
 
-    $user = User::create($username, $password, $avatar);
+    $user = User::create($username, $password);
 
     $_SESSION["loggedinuser"] = $user->getId();
 

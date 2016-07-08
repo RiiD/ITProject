@@ -20,11 +20,6 @@ class Post
     private $body;
 
     /**
-     * @var string
-     */
-    private $photo;
-
-    /**
      * @var User
      */
     private $user;
@@ -113,22 +108,6 @@ class Post
     }
 
     /**
-     * @return string
-     */
-    public function getPhoto()
-    {
-        return $this->photo;
-    }
-
-    /**
-     * @param string $photo
-     */
-    public function setPhoto($photo)
-    {
-        $this->photo = $photo;
-    }
-
-    /**
      * @return User
      */
     public function getUser()
@@ -178,33 +157,31 @@ class Post
             "body" => $this->getBody(),
             "createDate" => $this->getCreateDate(),
             "likes" => $this->getLikes(),
-            "photo" => $this->getPhoto(),
             "title" => $this->getTitle(),
             "isPrivate" => $this->isPrivate()
         ];
 
-        return json_encode($arr);
+        return $arr;
     }
 
-    /**
-     * @param $json
-     * @return Post
-     */
-    public static function deserialize($json) {
-        $arr = json_decode($json, true);
-
-        return static::fromArray($arr);
-    }
-
-    public static function fromArray($arr) {
+    public static function deserialize($arr) {
         $post = new Post();
         $post->id = $arr["id"];
         $post->setTitle($arr["title"]);
         $post->setBody($arr["body"]);
-        $post->isPrivate = $arr["isPrivate"];
+        if(array_key_exists("isPrivate", $arr)) {
+            $post->isPrivate = $arr["isPrivate"];
+        } else {
+            $post->isPrivate = false;
+        }
         $post->setLikes($arr["likes"]);
-        $post->setPhoto($arr["photo"]);
-        $post->setUser($arr["user"]);
+
+        if(is_array($arr["user"])) {
+            $post->setUser($arr["user"]["id"]);
+        }else {
+            $post->setUser($arr["user"]);
+        }
+
 
         return $post;
     }
@@ -234,16 +211,7 @@ class Post
             return false;
         }
         $res = $res[0];
-        $post = new Post();
-
-        $post->setTitle($res["title"]);
-        $post->setBody($res["body"]);
-        $post->isPrivate = $res["isPrivate"];
-        $post->id = $res["id"];
-        $post->setLikes($res["likes"]);
-        $post->setPhoto($res["photo"]);
-        $post->setUser($res["user"]);
-        return $post;
+        return static::deserialize($res);
     }
 
     /**
@@ -260,48 +228,29 @@ class Post
         $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(function($row) {
-            $post = new Post();
-            $post->setTitle($row["title"]);
-            $post->setBody($row["body"]);
-            $post->id = $row["id"];
-            $post->isPrivate = $row["isPrivate"];
-            $post->setLikes($row["likes"]);
-            $post->setPhoto($row["photo"]);
-            $post->setUser($row["user"]);
-            return $post;
+            return static::deserialize($row);
         }, $res);
     }
 
     /**
      * @param $title
      * @param $body
-     * @param $photo
      * @param $user
      * @param $isPrivate
      * @return Post
      */
-    public static function create($title, $body, $photo, $user, $isPrivate) {
+    public static function create($title, $body, $user, $isPrivate) {
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("INSERT INTO posts (title, body, photo, \"user\") VALUES (:title, :body, :photo, :user) RETURNING id");
+        $stmt = $conn->prepare("INSERT INTO posts (title, body, \"user\", \"isPrivate\") VALUES (:title, :body, :user, :isPrivate) RETURNING *");
         $stmt->execute([
             ":title" => $title,
             ":body" => $body,
             ":user" => $user,
-            ":photo" => $photo,
-            ":isPrivate" => $isPrivate
+            ":isPrivate" => $isPrivate ? 1: 0
         ]);
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
-        $id = $res["id"];
 
-        $post = new Post();
-        $post->setTitle($title);
-        $post->setBody($body);
-        $post->setLikes(0);
-        $post->setPhoto($photo);
-        $post->setUser($user);
-        $post->isPrivate = $isPrivate;
-        $post->id = $id;
-        return $post;
+        return static::deserialize($res);
     }
 
     /**
@@ -310,12 +259,11 @@ class Post
      */
     public static function update(Post $post){
         $conn = DB::getConnection();
-        $stmt = $conn->prepare("UPDATE posts SET title=:title, body=:body, likes=:likes, photo=:photo, \"user\"=:user, \"isPrivate\"=:isPrivate WHERE id=:id");
+        $stmt = $conn->prepare("UPDATE posts SET title=:title, body=:body, likes=:likes, \"user\"=:user, \"isPrivate\"=:isPrivate WHERE id=:id");
         return $stmt->execute([
             ":title" => $post->getTitle(),
              ":body"  => $post->getBody(),
             ":likes" => $post->getLikes(),
-            ":photo" => $post->getPhoto(),
             ":user" => $post->getUser(),
             ":id" => $post->getId(),
             ":isPrivate" => $post->isPrivate() ? 1 : 0

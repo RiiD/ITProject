@@ -4,13 +4,18 @@ import Post from "./Post.react";
 const PostList = React.createClass({
     render: function(){
 
-        let { posts, postSave } = this.props;
+        let { posts, postSave, location } = this.props;
 
         return (
-            <ul>
+            <ul className="list-unstyled">
                 {
                     posts.map(function(post, index) {
-                        return <li key={post.id}><Post post={post} postSave={postSave.bind(null, index)} /></li>
+                        return (
+                            <li key={post.id}>
+                                <Post post={post} postSave={postSave.bind(null, index)} location={ location } />
+                            </li>
+                        );
+
                     })
                 }
             </ul>

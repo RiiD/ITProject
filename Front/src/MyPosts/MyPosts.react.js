@@ -2,7 +2,7 @@ import React from "react";
 import PostList from "../Post/PostsList.react";
 import PostAddController from "../Post/PostAddController.react"
 
-const LatestPostsController = React.createClass({
+const MyPosts = React.createClass({
     getInitialState: function() {
         return {
             isLoading: true,
@@ -11,7 +11,7 @@ const LatestPostsController = React.createClass({
     },
 
     loadPosts: function() {
-        fetch("/user/posts.php", {credentials: 'include'})
+        fetch("/post/index.php", {credentials: 'include'})
             .then(resp => resp.json())
             .then(posts => this.setState({ isLoading: false, posts: posts }));
     },
@@ -54,11 +54,11 @@ const LatestPostsController = React.createClass({
                     <PostAddController onAddPost={this.addPost} />
                 </div>
                 <div className="col-md-12">
-                    <PostList posts={posts} postSave={this.postSave} />
+                    <PostList posts={posts} postSave={this.postSave} location="MyPosts" />
                 </div>
             </div>
         )
     }
 });
 
-export default LatestPostsController;
+export default MyPosts;
