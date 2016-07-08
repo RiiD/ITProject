@@ -1,6 +1,6 @@
 CREATE TABLE users
 (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY,
   username VARCHAR(25) NOT NULL,
   password VARCHAR(50) NOT NULL
 );
@@ -8,7 +8,7 @@ CREATE UNIQUE INDEX users_username_key ON users (username);
 
 CREATE TABLE posts
 (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY,
   title VARCHAR(50) NOT NULL,
   body TEXT NOT NULL,
   "user" INTEGER NOT NULL,
@@ -21,7 +21,7 @@ CREATE UNIQUE INDEX post_photos_id_uindex ON post_photos (id);
 
 CREATE TABLE post_photos
 (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY,
   post INTEGER NOT NULL,
   name VARCHAR(255) NOT NULL,
   CONSTRAINT post_photos_posts_id_fk FOREIGN KEY (post) REFERENCES posts (id)
@@ -29,7 +29,7 @@ CREATE TABLE post_photos
 
 CREATE TABLE comments
 (
-  id INTEGER PRIMARY KEY NOT NULL,
+  id SERIAL PRIMARY KEY,
   "user" INTEGER NOT NULL,
   post INTEGER NOT NULL,
   likes INTEGER DEFAULT 0 NOT NULL,
