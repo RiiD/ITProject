@@ -39,13 +39,15 @@ function post() {
     $imagesTmpPath = $_FILES["file"]["tmp_name"];
 
     foreach ($imagesTmpPath as $key => $tmpImage) {
-        $new_name = POST_IMAGES_DIR . $post->getId() . "_" . $key . ".jpg";
-        $new_thumb_name = POST_THUMB_DIR . $post->getId() . "_" . $key . ".jpg";
+        if($tmpImage) {
+            $new_name = POST_IMAGES_DIR . $post->getId() . "_" . $key . ".jpg";
+            $new_thumb_name = POST_THUMB_DIR . $post->getId() . "_" . $key . ".jpg";
 
-        copy($tmpImage, $new_name);
+            copy($tmpImage, $new_name);
 
-        createThumb($new_name, $new_thumb_name, POST_THUMB_WIDTH);
-        PostImage::create($post->getId(), $post->getId() . "_" . $key . ".jpg");
+            createThumb($new_name, $new_thumb_name, POST_THUMB_WIDTH);
+            PostImage::create($post->getId(), $post->getId() . "_" . $key . ".jpg");
+        }
     }
 
     echo json_encode(preparePost($post));
